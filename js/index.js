@@ -28,6 +28,9 @@ let resultData;
 let kmBase = 0;
 let km1To19 = 0;
 let kmUpTo19 = 0;
+let fare1km = 0;
+let fare1To19km = 0;
+let fareUpTo19Km = 0;
 
 // Các hàm tính toán
 function baseDistance(servicesGrab, distance = 0) {
@@ -62,51 +65,56 @@ function totalFare(servicesGrab, distance, waitTime) {
 
   // Tính tiền cơ bản cho 1 km đầu tiên
   fare += baseDistance(servicesGrab, distance);
+  fare1km = fare;
   if (distance > 0) {
-    details += `<td style="border: none">1 Km đầu tiên <br> giá ${fare.toLocaleString(
-      "it-IT",
-      {
-        style: "currency",
-        currency: "VND",
-      },
-    )}</td>`;
+    details += `
+<tr>
+<td>1km đầu tiên</td>
+<td style="border: none">1km</td> 
+<td>${fare1km.toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND",
+    })}</td>
+</tr>`;
   }
 
   // Tính tiền cho km từ 1 đến 19
   fare += kmTo19Distance(servicesGrab, distance);
+  fare1To19km = fare - fare1km;
   if (km1To19 > 0) {
-    details += `<td style="border: none">${Math.min(distance - 1, 18)} Km tiếp theo <br> giá ${fare.toLocaleString(
-      "it-IT",
-      {
-        style: "currency",
-        currency: "VND",
-      },
-    )}</td>`;
+    details += `<tr>
+<td>từ 1 đến 19km tiếp theo</td>
+<td style="border: none">${Math.min(distance - 1, 18)}km</td>
+ <td>${fare1To19km.toLocaleString("it-IT", {
+   style: "currency",
+   currency: "VND",
+ })}</td></tr>`;
   }
 
   // Tính tiền cho km từ 19 trở đi
   fare += upTo19Distance(servicesGrab, distance);
+  fareUpTo19Km = fare - fare1To19km - fare1km;
   if (kmUpTo19 > 0) {
-    details += `<td style="border: none">sau 19 Km <br> giá ${fare.toLocaleString(
-      "it-IT",
-      {
-        style: "currency",
-        currency: "VND",
-      },
-    )} với ${distance - 19} Km </td>`;
+    details += `
+<tr>
+<td>trên 19km</td>
+<td style="border: none">${distance - 19}Km </td>
+<td>${fareUpTo19Km.toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND",
+    })}</td>
+</tr>
+`;
   }
   // Tính tiền thời gian chờ
   const waitingCost = calculateWaitTime(servicesGrab, waitTime);
   fare += waitingCost;
   feeWait +=
     waitTime > 3
-      ? `Thời gian chờ tính phí (${waitTime - 3} phút) giá  <br> ${waitingCost.toLocaleString(
-          "it-IT",
-          {
-            style: "currency",
-            currency: "VND",
-          },
-        )}`
+      ? `*Tính phí ${waitTime - 3} phút ${waitingCost.toLocaleString("it-IT", {
+          style: "currency",
+          currency: "VND",
+        })}`
       : `Thời gian chờ tính phí 0  phút)`;
 
   return { fare, details, feeWait };
@@ -159,37 +167,40 @@ document.getElementById("btnInvoice").onclick = function () {
   resultData = totalFare(servicesGrab, distance, waitTime);
   let result = resultData.fare;
   document.querySelector(".content-invoice").innerHTML = `
-  <table class="table">
+  <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
     <thead>
-      <tr>
-        <th scope="col" colspan="5">Chi tiết</th>
-      </tr>
-    </thead>
-    <tbody>
       <tr>
         <td style="font-weight: bold">Loại xe</td>
         <td colspan="4">${selectServicesGrab}</td>
       </tr>
       <tr>
         <td style="font-weight: bold">Số Km</td>
-        <td>${distance} Km</td>
-        <td colspan="3">
-          <table class=" distance-price">
-            ${resultData.details} <!-- Chi tiết các phần của Km và giá -->
-          </table>
-        </td>
+        <td colspan="4">${distance} Km</td>
       </tr>
       <tr>
-        <td colspan="2" style="font-weight: bold">Thời gian chờ</td>
-        <td>${waitTime} phút</td>
+        <th scope="col">Chi tiết</th>
+        <th scope="col">Sử dụng</th>
+        <th scope="col" colspan="2">Đơn giá</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${resultData.details} <!-- Chi tiết các phần của Km và giá, cần đảm bảo kết xuất đúng cấu trúc -->
+      <tr>
+        <td style="font-weight: bold">Thời gian chờ</td>
+        <td>${waitTime} phút <br>
+        *(Miễn phí 3 phút đầu)
+        </td>
         <td colspan="2">${resultData.feeWait}</td>
       </tr>
       <tr>
-        <td colspan="4" style="font-weight: bold">Thành tiền</td>
-        <td>${result.toLocaleString("it-IT", {
-          style: "currency",
-          currency: "VND",
-        })}</td>
+        <td style="font-weight: bold">Thành tiền</td>
+        <td colspan="3" style="text-align: right; color: rgba(255,59,103,0.96)">${result.toLocaleString(
+          "it-IT",
+          {
+            style: "currency",
+            currency: "VND",
+          },
+        )}</td>
       </tr>
     </tbody>
   </table>
