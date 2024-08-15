@@ -186,7 +186,7 @@ document.getElementById("btnInvoice").onclick = function () {
       </tr>
       <tr>
         <td colspan="4" style="font-weight: bold">Thành tiền</td>
-        <td>${result.toLocaleString("vi-VN", {
+        <td>${result.toLocaleString("it-IT", {
           style: "currency",
           currency: "VND",
         })}</td>
