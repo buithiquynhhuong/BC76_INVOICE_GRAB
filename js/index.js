@@ -209,7 +209,7 @@ document.getElementById("btnInvoice").onclick = function () {
       </tr>
       <tr>
         <td style="font-weight: bold">Thành tiền</td>
-        <td colspan="3" style="text-align: right; color: rgba(255,59,103,0.96)">${result.toLocaleString(
+        <td colspan="3" style="text-align: right; font-size: 22px; color: rgba(255,59,103,0.96)">${result.toLocaleString(
           "it-IT",
           {
             style: "currency",
