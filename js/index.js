@@ -123,10 +123,13 @@ function totalFare(servicesGrab, distance, waitTime) {
   fare += waitingCost;
   feeWait +=
     waitTime > 3
-      ? `*Tính phí ${waitTime - 3} phút ${waitingCost.toLocaleString("it-IT", {
-          style: "currency",
-          currency: "VND",
-        })}`
+      ? `*Tính phí ${waitTime - 3} phút </br> ${waitingCost.toLocaleString(
+          "it-IT",
+          {
+            style: "currency",
+            currency: "VND",
+          },
+        )}`
       : `Thời gian chờ tính phí 0  phút)`;
 
   return { fare, details, feeWait };
