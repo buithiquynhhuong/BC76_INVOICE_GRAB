@@ -70,7 +70,11 @@ function totalFare(servicesGrab, distance, waitTime) {
     details += `
 <tr>
 <td>1km đầu tiên</td>
-<td style="border: none">1km</td> 
+<td>1km</td>
+<td>${servicesGrab.baseKm.toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND",
+    })}</td>
 <td>${fare1km.toLocaleString("it-IT", {
       style: "currency",
       currency: "VND",
@@ -84,7 +88,11 @@ function totalFare(servicesGrab, distance, waitTime) {
   if (km1To19 > 0) {
     details += `<tr>
 <td>từ 1 đến 19km tiếp theo</td>
-<td style="border: none">${Math.min(distance - 1, 18)}km</td>
+<td>${Math.min(distance - 1, 18)}km</td>
+<td>${servicesGrab.km1to19.toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND",
+    })}</td>
  <td>${fare1To19km.toLocaleString("it-IT", {
    style: "currency",
    currency: "VND",
@@ -98,7 +106,11 @@ function totalFare(servicesGrab, distance, waitTime) {
     details += `
 <tr>
 <td>trên 19km</td>
-<td style="border: none">${distance - 19}Km </td>
+<td>${distance - 19}Km </td>
+<td>${servicesGrab.kmUpto19.toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND",
+    })}</td>
 <td>${fareUpTo19Km.toLocaleString("it-IT", {
       style: "currency",
       currency: "VND",
@@ -139,13 +151,11 @@ function getInputElement() {
 // Sự kiện nhấn nút tính tiền
 document.getElementById("tinhTien").onclick = function () {
   if (!getInputElement()) {
-    return (document.querySelector(".noti").innerHTML =
-      "Please select a service.");
+    return alert("Please select a service.");
   }
 
   if (distance <= 0 || waitTime < 0) {
-    return (document.querySelector(".noti").innerHTML =
-      "Please enter valid distance and wait time.");
+    return alert("Please enter valid distance and wait time.");
   }
   resultData = totalFare(servicesGrab, distance, waitTime);
   let result = resultData.fare;
@@ -180,16 +190,21 @@ document.getElementById("btnInvoice").onclick = function () {
       <tr>
         <th scope="col">Chi tiết</th>
         <th scope="col">Sử dụng</th>
-        <th scope="col" colspan="2">Đơn giá</th>
+        <th scope="col">Đơn giá</th>
+        <th scope="col" colspan="2">Thành tiền</th>
       </tr>
     </thead>
     <tbody>
-      ${resultData.details} <!-- Chi tiết các phần của Km và giá, cần đảm bảo kết xuất đúng cấu trúc -->
+      ${resultData.details}
       <tr>
-        <td style="font-weight: bold">Thời gian chờ</td>
-        <td>${waitTime} phút <br>
-        *(Miễn phí 3 phút đầu)
+        <td style="font-weight: bold">Thời gian chờ <br>
+        *(Miễn phí 3 phút đầu)</td>
+        <td>${waitTime} phút
         </td>
+        <td>${servicesGrab.waiting.toLocaleString("it-IT", {
+          style: "currency",
+          currency: "VND",
+        })}</td>
         <td colspan="2">${resultData.feeWait}</td>
       </tr>
       <tr>
